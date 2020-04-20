@@ -6,8 +6,6 @@ import TodoListTasks from "./TodoListTasks";
 
 class App extends React.Component {
 
-    newTaskTitleRef = React.createRef();
-
     state = {
         tasks: [
             {title :"CSS", isDone:true, priority: "low"},
@@ -16,35 +14,51 @@ class App extends React.Component {
             {title :"HTML", isDone:false, priority: "low"}
         ],
 
-        filterValue: "Completed"
+        filterValue: "All"
     };
 
-    onAddTaskClick = () => {
-        let newText = this.newTaskTitleRef.current.value;
+    addTask = (newTitle) => {
         let newTask = {
-            title: newText,
+            title: newTitle,
             isDone: false,
             priority: 'low'
         };
         let newTasks = [newTask, ...this.state.tasks];
         this.setState( {tasks: newTasks});
-        this.newTaskTitleRef.current.value = "";
+    }
+
+    changeFilter = (newFilterValue) => {
+        this.setState({filterValue: newFilterValue});
+    }
+
+    changeStatus = (task, isDone) => {
+        let newTask = this.state.tasks.map( t => {
+            if (t === task) {
+                return {...t, isDone: isDone}
+            }
+        return t;
+    })
+        this.setState({tasks: newTask})
     }
 
     render = () => {
         return (
             <div className="App">
                 <div className="todoList">
-                    <div className="todoList-header">
-                        <h3 className="todoList-header__title">What to Learn</h3>
-                        <div className="todoList-newTaskForm">
-                            <input ref={this.newTaskTitleRef} type="text" placeholder="New task name"/>
-                            <button onClick={this.onAddTaskClick}>Add</button>
-                        </div>
-                    </div>
-                    {/*<TodoListHeader />*/}
-                    <TodoListTasks tasks = {this.state.tasks}/>
-                    <TodoListFooter filterValue = {this.state.filterValue}/>
+                    <TodoListHeader addTask={this.addTask}/>
+                    <TodoListTasks tasks = {this.state.tasks.filter(t => {
+                        switch (this.state.filterValue) {
+                            case 'Active':
+                                return t.isDone === false;
+                            case 'Completed':
+                                return t.isDone === true;
+                            default:
+                                return true;
+                        }
+                    })}
+                    changeStatus={this.changeStatus}/>
+                    <TodoListFooter filterValue = {this.state.filterValue}
+                                    changeFilter = {this.changeFilter}/>
                 </div>
             </div>
         );
