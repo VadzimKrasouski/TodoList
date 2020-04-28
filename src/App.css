@@ -17,3 +17,15 @@
 .filter-active {
   background-color: #7d83ff;
 }
+
+.error {
+  border-color: red;
+}
+
+.todoList-task.done {
+  opacity: 0.5;
+}
+
+.todoList-task {
+
+}
